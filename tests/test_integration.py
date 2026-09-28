@@ -201,6 +201,10 @@ class CLIFullFlowIntegrationTest(unittest.TestCase):
         self.assertIn("[MASKED_SECRET]", prompt)
         self.assertIn("[MASKED_EMAIL]", prompt)
         self.assertIn("[INFO] safe-mode 적용: 민감정보 2건 마스킹", stdout)
+        self.assertNotIn(fake_key, stdout)
+        self.assertNotIn(fake_email, stdout)
+        self.assertIn("[MASKED_SECRET]", stdout)
+        self.assertIn("[MASKED_EMAIL]", stdout)
         self.assertIn("[WARN] PR 제목이 80자를 넘어", stdout)
         self.assertIn(
             f"--- PR Title ---\n{main.shorten_title(long_title, 80)}",

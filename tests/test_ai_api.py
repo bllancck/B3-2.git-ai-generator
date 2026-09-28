@@ -552,7 +552,7 @@ class SafeModeTest(unittest.TestCase):
                 return_value=(changed_files, diff_output),
             ),
             patch("main.get_api_key", return_value="dummy-secret"),
-            patch("main.print_git_changes"),
+            patch("main.print_git_changes") as display,
             patch("main.build_commit_prompt", return_value="제한된 프롬프트") as builder,
             patch("main.call_ai_api", return_value="safe mode 적용"),
             patch("sys.stdout", stdout),
@@ -561,6 +561,7 @@ class SafeModeTest(unittest.TestCase):
 
         self.assertEqual(exit_code, 0)
         sent_files, sent_diff = builder.call_args.args
+        display.assert_called_once_with(sent_files, sent_diff)
         self.assertEqual(sent_files[0], "reports/[MASKED_EMAIL]")
         self.assertEqual(sent_files[1], "main.py")
         self.assertNotIn("sk-cody-live-Secret1234", sent_diff)

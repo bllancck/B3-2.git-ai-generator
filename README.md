@@ -44,13 +44,23 @@ AI API 호출
 
 ```text
 .
-├── .env.example             # API Key 설정 예시
-├── .gitignore               # .env와 가상환경 Git 제외
-├── README.md                 # 프로젝트 소개 및 사용 안내
-├── main.py                   # CLI, Git 수집, 코디세이 AI API 호출
+├── .env.example
+├── .gitignore
+├── README.md
+├── main.py                   # CLI 실행 순서와 진입점
+├── gitgen/
+│   ├── ai.py                 # AI API 요청과 응답 처리
+│   ├── cli.py                # 명령행 옵션
+│   ├── config.py             # API Key 설정
+│   ├── errors.py             # 기능별 오류 타입
+│   ├── gitctx.py             # Git 변경 수집
+│   ├── postprocess.py        # 생성 결과의 길이와 형식 검증
+│   ├── prompts.py            # commit/pr 프롬프트
+│   ├── render.py             # 터미널 출력
+│   └── sanitizer.py          # safe-mode 마스킹
 ├── requirements.txt         # Python 패키지 의존성
 ├── docs/
-│   └── troubleshooting.md    # 실행 오류 진단 및 해결 방법
+│   └── troubleshooting.md
 └── tests/
     ├── test_ai_api.py        # 기능별 API 요청과 오류 처리 테스트
     └── test_integration.py   # 실제 임시 Git 저장소 기반 통합 테스트
@@ -181,8 +191,8 @@ python3 main.py commit --safe-mode
 python3 main.py pr --safe-mode
 ```
 
-Safe mode를 사용하면 변경 파일명과 Git diff에서 다음 패턴을 찾아 치환한 뒤 AI
-프롬프트에 전달합니다.
+Safe mode를 사용하면 변경 파일명과 Git diff에서 다음 패턴을 찾아 치환한 뒤
+터미널에 표시하고 AI 프롬프트에 전달합니다.
 
 - `API_KEY`, `api-key`, `access_token`, `token`, `secret`, `password` 할당값:
   `[MASKED_SECRET]`
@@ -195,10 +205,10 @@ Safe mode를 적용하면 다음과 같이 처리됩니다.
 | 대상 | 처리 방식 |
 |---|---|
 | AI API 프롬프트 | 변경 파일명과 diff의 민감정보 패턴을 마스킹 |
-| 터미널 출력 | 마스킹 건수를 표시하고, `Changed Files`와 `Git Diff`에는 원본을 표시 |
+| 터미널 출력 | 마스킹 건수를 표시하고, `Changed Files`와 `Git Diff`에도 마스킹된 내용을 표시 |
 
 > **주의:** Safe mode는 알려진 패턴만 탐지합니다. 실행 전에 `git diff`를 직접
-> 확인하고, 화면 공유나 터미널 로그 저장 시 원본 노출에 주의하세요.
+> 확인하세요. 탐지되지 않은 민감정보는 AI 전송 내용과 터미널 출력에 남을 수 있습니다.
 
 옵션을 생략하면 원본 변경 파일명과 diff를 AI API로 전송합니다.
 
@@ -251,8 +261,8 @@ PR 초안에는 다음 규칙이 적용됩니다.
 
 - 변경 파일 목록과 diff는 코디세이 기관 API로 전송됩니다. 실행 전에 `git diff`를
   확인하세요.
-- Safe mode는 알려진 패턴만 마스킹하며 터미널에는 원본을 출력합니다. 자세한 내용은
-  [Safe mode](#safe-mode)를 참고하세요.
+- Safe mode는 알려진 패턴을 AI 전송 내용과 터미널 출력에 동일하게 마스킹합니다.
+  자세한 내용은 [Safe mode](#safe-mode)를 참고하세요.
 
 ### Git 수집 범위
 
