@@ -184,6 +184,14 @@ Key 값 자체는 어떤 경우에도 출력하지 않습니다.
 [INFO] AI API 호출 횟수: 0회
 ```
 
+### 종료 코드
+
+| 코드 | 의미 |
+|---|---|
+| `0` | 생성 성공 또는 변경 사항 없음 |
+| `1` | Git 명령, API Key 설정, AI API 요청·응답 오류 |
+| `2` | 잘못된 명령이나 옵션 입력 |
+
 ### 문제 해결
 
 API Key 입력과 인증, 기관 API 엔드포인트, Git 저장소 및 diff, 네트워크 오류에 대한 진단 방법은
@@ -223,11 +231,12 @@ python3 main.py pr --safe-mode
 Safe mode를 사용하면 변경 파일명과 Git diff에서 다음 패턴을 찾아 치환한 뒤
 터미널에 표시하고 AI 프롬프트에 전달합니다.
 
-- `API_KEY`, `api-key`, `access_token`, `token`, `secret`, `password` 할당값:
-  `[MASKED_SECRET]`
-- `Authorization: Bearer ...` 형태의 인증값: `[MASKED_TOKEN]`
-- `sk-`로 시작하는 API Key 형태: `[MASKED_API_KEY]`
-- 이메일 주소: `[MASKED_EMAIL]`
+| 마스킹 대상 | 치환 값 |
+|---|---|
+| `API_KEY`, `api-key`, `access_token`, `token`, `secret`, `password` 할당값 | `[MASKED_SECRET]` |
+| `Bearer` 인증값 | `[MASKED_TOKEN]` |
+| `sk-`로 시작하는 API Key | `[MASKED_API_KEY]` |
+| 이메일 주소 | `[MASKED_EMAIL]` |
 
 Safe mode를 적용하면 다음과 같이 처리됩니다.
 
