@@ -4,3 +4,5 @@
 B6-2.md
 implementation_plan.md
 docs/local/
+__pycache__/
+*.py[cod]
