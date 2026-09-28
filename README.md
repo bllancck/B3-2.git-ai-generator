@@ -52,17 +52,15 @@ flowchart LR
     Config --> Main
     Main --> Input{safe-mode 사용?}
     Input -->|예| Mask[sanitizer.py<br/>파일명과 diff 마스킹]
-    Input -->|아니오| Original[원본 파일명과 diff]
-    Mask --> Prompt[prompts.py<br/>명령별 프롬프트 구성]
-    Original --> Prompt
-    Mask --> Preview[render.py<br/>Git 변경 출력]
-    Original --> Preview
+    Input -->|아니오| Changes[사용할 파일명과 diff]
+    Mask --> Changes
+    Changes --> Prompt[prompts.py<br/>명령별 프롬프트 구성]
+    Changes --> Preview[render.py<br/>Git 변경 출력]
     Prompt --> AI[ai.py<br/>HTTP 요청과 응답 처리]
-    AI --> API[코디세이 기관 AI API]
-    API --> AI
-    AI --> Result[render.py<br/>생성 결과 출력 처리]
-    Result --> Validate[postprocess.py<br/>길이와 형식 검증]
-    Validate --> Result
+    AI <-->|요청과 응답| API[코디세이 기관 AI API]
+    AI --> Generated[생성 텍스트]
+    Generated --> Validate[postprocess.py<br/>길이와 형식 검증]
+    Validate --> Result[render.py<br/>생성 결과 출력]
     Preview --> Terminal[터미널]
     Result --> Terminal
 ```
