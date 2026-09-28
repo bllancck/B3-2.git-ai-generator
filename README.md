@@ -35,9 +35,9 @@ flowchart LR
 
 프로그램의 내부 구조와 세부 처리 과정은 다음 문서를 참고하세요.
 
-- [아키텍처](docs/design/architecture.md)
-- [상세 실행 흐름](docs/design/execution-flow.md)
-- [함수 호출 관계](docs/design/function-call-flow.md)
+- [모듈 구성과 역할](docs/design/architecture.md): 파일별 책임, 데이터 경계, 구현 범위
+- [상세 실행 흐름](docs/design/execution-flow.md): 명령 실행부터 종료까지의 처리 순서와 분기
+- [함수 호출 관계](docs/design/function-call-flow.md): 함수가 호출되는 관계와 각 함수의 역할
 
 ## 프로젝트 구조
 
