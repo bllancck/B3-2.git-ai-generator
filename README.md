@@ -64,7 +64,8 @@ flowchart LR
 │   │   ├── execution-flow.md     # 상세 실행 흐름
 │   │   └── function-call-flow.md # 함수 호출 관계
 │   └── guides/
-│       └── troubleshooting.md    # 오류 상황별 해결 방법
+│       ├── ai-parameter-comparison.md # AI 파라미터별 실제 출력 비교
+│       └── troubleshooting.md         # 오류 상황별 해결 방법
 └── tests/
     ├── test_ai_api.py        # 기능별 API 요청과 오류 처리 테스트
     └── test_integration.py   # 실제 임시 Git 저장소 기반 통합 테스트
@@ -193,6 +194,9 @@ python3 main.py commit \
 | `--safe-mode` | AI에 보내기 전 알려진 민감정보 패턴 마스킹 | 사용하지 않음 |
 
 `--model`에는 기관 API가 지원하는 비어 있지 않은 모델 이름을 입력해야 합니다.
+
+값을 하나씩 바꾸어 실제 출력 차이를 확인한 결과는
+[AI API 파라미터 비교](docs/guides/ai-parameter-comparison.md)를 참고하세요.
 
 ### Safe mode
 
