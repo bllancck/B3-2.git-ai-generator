@@ -47,16 +47,16 @@ API Key는 `main.py`에서 `ai.py`로 전달되어 인증 헤더에 사용된다
 
 | 파일 | 책임 | 주요 함수 또는 타입 |
 |---|---|---|
-| [main.py](../main.py) | 구성 요소를 연결하고 실행 순서, 종료 코드, API 호출 횟수 로그를 관리한다. | `main()` |
-| [gitgen/cli.py](../gitgen/cli.py) | `commit`, `pr` 명령과 공통 옵션을 정의하고 옵션 값을 검증한다. | `create_parser()` |
-| [gitgen/config.py](../gitgen/config.py) | 프로젝트 `.env`와 환경변수에서 API Key를 읽는다. | `get_api_key()` |
-| [gitgen/gitctx.py](../gitgen/gitctx.py) | Git 명령을 실행하여 변경 파일 목록과 diff를 수집한다. | `collect_git_changes()` |
-| [gitgen/sanitizer.py](../gitgen/sanitizer.py) | 파일명과 diff에서 알려진 민감정보 패턴을 마스킹한다. | `mask_changes_for_safe_mode()` |
-| [gitgen/prompts.py](../gitgen/prompts.py) | 변경 내용을 명령별 생성 규칙과 결합해 프롬프트를 만든다. | `build_commit_prompt()`, `build_pr_prompt()` |
-| [gitgen/ai.py](../gitgen/ai.py) | API 요청을 보내고 응답 텍스트 추출 및 통신 오류 변환을 담당한다. | `call_ai_api()` |
-| [gitgen/postprocess.py](../gitgen/postprocess.py) | 생성된 제목의 길이와 PR 본문 구조를 검사하고 보완한다. | `validate_commit_message()`, `validate_pr_draft()` |
-| [gitgen/render.py](../gitgen/render.py) | Git 변경을 표시하고 후처리 함수를 호출하여 결과와 경고를 출력한다. | `print_git_changes()`, `print_commit_result()`, `print_pr_result()` |
-| [gitgen/errors.py](../gitgen/errors.py) | Git, 설정, API 오류를 구분하는 예외 타입을 정의한다. | `GitCommandError`, `ConfigurationError`, `AIAPIError` |
+| [main.py](../../main.py) | 구성 요소를 연결하고 실행 순서, 종료 코드, API 호출 횟수 로그를 관리한다. | `main()` |
+| [gitgen/cli.py](../../gitgen/cli.py) | `commit`, `pr` 명령과 공통 옵션을 정의하고 옵션 값을 검증한다. | `create_parser()` |
+| [gitgen/config.py](../../gitgen/config.py) | 프로젝트 `.env`와 환경변수에서 API Key를 읽는다. | `get_api_key()` |
+| [gitgen/gitctx.py](../../gitgen/gitctx.py) | Git 명령을 실행하여 변경 파일 목록과 diff를 수집한다. | `collect_git_changes()` |
+| [gitgen/sanitizer.py](../../gitgen/sanitizer.py) | 파일명과 diff에서 알려진 민감정보 패턴을 마스킹한다. | `mask_changes_for_safe_mode()` |
+| [gitgen/prompts.py](../../gitgen/prompts.py) | 변경 내용을 명령별 생성 규칙과 결합해 프롬프트를 만든다. | `build_commit_prompt()`, `build_pr_prompt()` |
+| [gitgen/ai.py](../../gitgen/ai.py) | API 요청을 보내고 응답 텍스트 추출 및 통신 오류 변환을 담당한다. | `call_ai_api()` |
+| [gitgen/postprocess.py](../../gitgen/postprocess.py) | 생성된 제목의 길이와 PR 본문 구조를 검사하고 보완한다. | `validate_commit_message()`, `validate_pr_draft()` |
+| [gitgen/render.py](../../gitgen/render.py) | Git 변경을 표시하고 후처리 함수를 호출하여 결과와 경고를 출력한다. | `print_git_changes()`, `print_commit_result()`, `print_pr_result()` |
+| [gitgen/errors.py](../../gitgen/errors.py) | Git, 설정, API 오류를 구분하는 예외 타입을 정의한다. | `GitCommandError`, `ConfigurationError`, `AIAPIError` |
 
 `main.py`에는 여러 모듈의 함수를 가져오는 import도 있지만 실제 기능 구현은
 각 모듈에 있다. 결과 검증은 현재 `render.py`가 `postprocess.py`를 호출하는 구조다.
@@ -155,9 +155,9 @@ Git 명령은 프로그램을 실행한 현재 작업 디렉터리를 기준으�
 
 ## 검증 구조
 
-[tests/test_ai_api.py](../tests/test_ai_api.py)는 설정 우선순위, 요청 파라미터,
+[tests/test_ai_api.py](../../tests/test_ai_api.py)는 설정 우선순위, 요청 파라미터,
 응답과 오류 처리, CLI 옵션, 프롬프트, 결과 후처리, Safe mode를 검증한다.
-[tests/test_integration.py](../tests/test_integration.py)는 임시 Git 저장소에서
+[tests/test_integration.py](../../tests/test_integration.py)는 임시 Git 저장소에서
 실제 변경을 만들고 CLI의 전체 연결 흐름과 종료 조건을 검증한다.
 두 테스트 파일 모두 외부 API 통신은 가짜 응답으로 대체한다.
 
@@ -168,5 +168,5 @@ python3 -m unittest discover -s tests -v
 ```
 
 실제 기관 API의 인증 및 연결과 생성 초안의 적절성은 **사용자 확인 필요** 항목이다.
-실행 방법은 [README](../README.md), 오류 진단은
-[트러블슈팅 가이드](troubleshooting.md)를 참고한다.
+실행 방법은 [README](../../README.md), 오류 진단은
+[트러블슈팅 가이드](../guides/troubleshooting.md)를 참고한다.

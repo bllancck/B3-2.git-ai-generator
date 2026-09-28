@@ -23,7 +23,7 @@ AI API에 전달하고, 변경 내용에 맞는 커밋 메시지 또는 Pull Req
 | 결과 출력 | 생성 결과를 자동 적용하지 않고 검토 가능한 초안으로 출력 |
 
 <details>
-<summary><strong>파일별 코드 흐름 펼쳐보기</strong></summary>
+<summary><strong>실행 흐름 상세 보기</strong></summary>
 
 ```mermaid
 flowchart TB
@@ -77,7 +77,7 @@ flowchart TB
 
 </details>
 
-각 모듈의 책임과 오류 처리, 데이터 경계는 [아키텍처 문서](docs/architecture.md)에
+각 모듈의 책임과 오류 처리, 데이터 경계는 [아키텍처 문서](docs/design/architecture.md)에
 정리되어 있습니다.
 
 ## 프로젝트 구조
@@ -100,8 +100,10 @@ flowchart TB
 │   └── sanitizer.py          # safe-mode 마스킹
 ├── requirements.txt         # Python 패키지 의존성
 ├── docs/
-│   ├── architecture.md       # 구성도와 모듈별 책임
-│   └── troubleshooting.md
+│   ├── design/
+│   │   └── architecture.md       # 구성도와 모듈별 책임
+│   └── guides/
+│       └── troubleshooting.md    # 오류 상황별 해결 방법
 └── tests/
     ├── test_ai_api.py        # 기능별 API 요청과 오류 처리 테스트
     └── test_integration.py   # 실제 임시 Git 저장소 기반 통합 테스트
@@ -207,7 +209,7 @@ Key 값 자체는 어떤 경우에도 출력하지 않습니다.
 ### 문제 해결
 
 API Key 입력과 인증, 기관 API 엔드포인트, Git 저장소 및 diff, 네트워크 오류에 대한 진단 방법은
-[트러블슈팅 가이드](docs/troubleshooting.md)를 참고하세요.
+[트러블슈팅 가이드](docs/guides/troubleshooting.md)를 참고하세요.
 
 ### AI API 파라미터 지정
 
