@@ -168,6 +168,30 @@ class CLIFullFlowIntegrationTest(unittest.TestCase):
             stdout,
         )
 
+    def test_commit_flow_includes_staged_diff(self):
+        self.sample_path.write_text(
+            'def greeting():\n    return "hello, staged"\n',
+            encoding="utf-8",
+        )
+        self.run_git("add", "sample.py")
+
+        exit_code, stdout, stderr, urlopen = self.invoke_cli(
+            ["commit"],
+            response=MockAPIResponse("스테이징된 인사말 변경"),
+        )
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(stderr, "")
+        urlopen.assert_called_once()
+        sent_request = urlopen.call_args.args[0]
+        payload = json.loads(sent_request.data.decode("utf-8"))
+        prompt = payload["messages"][0]["content"]
+        self.assertIn("--- Staged Changes ---", prompt)
+        self.assertIn('+    return "hello, staged"', prompt)
+        self.assertNotIn("--- Unstaged Changes ---", prompt)
+        self.assertIn("--- Staged Changes ---", stdout)
+        self.assertIn('+    return "hello, staged"', stdout)
+
     def test_pr_safe_mode_masks_diff_and_normalizes_generated_draft(self):
         fake_key = "sk-integrationSecret1234"
         fake_email = "student@example.com"

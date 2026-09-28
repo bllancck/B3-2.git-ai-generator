@@ -33,8 +33,15 @@ def extract_changed_files(status_output: str) -> list[str]:
 
 
 def collect_git_changes() -> tuple[list[str], str]:
-    """현재 저장소의 변경 파일 목록과 diff 내용을 수집한다."""
+    """현재 저장소의 변경 파일 목록과 staged/unstaged diff를 수집한다."""
     status_output = run_git_command("status", "--short")
-    diff_output = run_git_command("diff")
+    unstaged_diff = run_git_command("diff")
+    staged_diff = run_git_command("diff", "--cached")
     changed_files = extract_changed_files(status_output)
+    diff_sections = []
+    if staged_diff.strip():
+        diff_sections.append(f"--- Staged Changes ---\n{staged_diff.rstrip()}")
+    if unstaged_diff.strip():
+        diff_sections.append(f"--- Unstaged Changes ---\n{unstaged_diff.rstrip()}")
+    diff_output = "\n\n".join(diff_sections)
     return changed_files, diff_output

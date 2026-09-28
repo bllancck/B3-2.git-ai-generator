@@ -2,8 +2,8 @@
 
 ## 프로젝트 소개
 
-Git 저장소의 `git status`와 `git diff`를 수집해 코디세이 기관 AI API에 전달하고,
-변경 내용에 맞는 커밋 메시지 또는 Pull Request(PR) 초안을 생성하는 Python CLI
+Git 저장소의 `git status`, `git diff`, `git diff --cached`를 수집해 코디세이 기관
+AI API에 전달하고, 변경 내용에 맞는 커밋 메시지 또는 Pull Request(PR) 초안을 생성하는 Python CLI
 도구입니다. 기관 API는 OpenAI 호환 Chat Completions 형식을 사용합니다.
 
 생성 결과는 Git이나 GitHub에 자동 반영하지 않고 터미널에 초안으로 출력합니다.
@@ -13,7 +13,7 @@ Git 저장소의 `git status`와 `git diff`를 수집해 코디세이 기관 AI 
 
 | 구분 | 주요 기능 |
 |---|---|
-| Git 변경 수집 | `git status`와 `git diff`로 변경 파일과 내용을 수집 |
+| Git 변경 수집 | unstaged 및 staged 변경 파일과 diff를 모두 수집 |
 | `commit` 명령 | 변경 내용을 바탕으로 커밋 제목 한 줄 생성 |
 | `pr` 명령 | PR 제목과 `Why`, `What`, `How to Test` 본문 생성 |
 | CLI 옵션 | 모델, temperature, 최대 토큰 수를 실행 명령에서 설정 |
@@ -40,6 +40,36 @@ AI API 호출
 터미널 출력
 ```
 
+### 전체 구성도
+
+```mermaid
+flowchart LR
+    User[사용자] --> CLI[cli.py<br/>명령과 옵션 해석]
+    CLI --> Main[main.py<br/>실행 흐름 조정]
+    Git[(로컬 Git 저장소)] --> GitCtx[gitctx.py<br/>변경 수집]
+    GitCtx --> Main
+    Env[환경변수 / 프로젝트 .env] --> Config[config.py<br/>API Key 로드]
+    Config --> Main
+    Main --> Input{safe-mode 사용?}
+    Input -->|예| Mask[sanitizer.py<br/>파일명과 diff 마스킹]
+    Input -->|아니오| Original[원본 파일명과 diff]
+    Mask --> Prompt[prompts.py<br/>명령별 프롬프트 구성]
+    Original --> Prompt
+    Mask --> Preview[render.py<br/>Git 변경 출력]
+    Original --> Preview
+    Prompt --> AI[ai.py<br/>HTTP 요청과 응답 처리]
+    AI --> API[코디세이 기관 AI API]
+    API --> AI
+    AI --> Result[render.py<br/>생성 결과 출력 처리]
+    Result --> Validate[postprocess.py<br/>길이와 형식 검증]
+    Validate --> Result
+    Preview --> Terminal[터미널]
+    Result --> Terminal
+```
+
+각 모듈의 책임과 오류 처리, 데이터 경계는 [아키텍처 문서](docs/architecture.md)에
+정리되어 있습니다.
+
 ## 프로젝트 구조
 
 ```text
@@ -60,6 +90,7 @@ AI API 호출
 │   └── sanitizer.py          # safe-mode 마스킹
 ├── requirements.txt         # Python 패키지 의존성
 ├── docs/
+│   ├── architecture.md       # 구성도와 모듈별 책임
 │   └── troubleshooting.md
 └── tests/
     ├── test_ai_api.py        # 기능별 API 요청과 오류 처리 테스트
@@ -134,8 +165,8 @@ PR 제목과 `Why`, `What`, `How to Test` 구조를 갖춘 본문을 생성합�
 
 ### 변경 사항이 없는 경우
 
-`git status`와 `git diff`에서 변경 사항을 찾지 못하면 두 명령 모두 생성 작업을
-진행하지 않고 종료 코드 0으로 끝납니다.
+`git status`, `git diff`, `git diff --cached`에서 변경 사항을 찾지 못하면 두 명령
+모두 생성 작업을 진행하지 않고 종료 코드 0으로 끝납니다.
 
 ```text
 [INFO] 실행 명령: <commit 또는 pr>
@@ -259,15 +290,16 @@ PR 초안에는 다음 규칙이 적용됩니다.
 
 ### 민감정보
 
-- 변경 파일 목록과 diff는 코디세이 기관 API로 전송됩니다. 실행 전에 `git diff`를
-  확인하세요.
+- 변경 파일 목록과 diff는 코디세이 기관 API로 전송됩니다. 실행 전에 `git diff`와
+  `git diff --cached`를 확인하세요.
 - Safe mode는 알려진 패턴을 AI 전송 내용과 터미널 출력에 동일하게 마스킹합니다.
   자세한 내용은 [Safe mode](#safe-mode)를 참고하세요.
 
 ### Git 수집 범위
 
-- 기본 `git diff`에는 스테이징된 변경과 아직 추적하지 않는 파일의 내용이 포함되지
-  않습니다. 추적하지 않는 파일은 변경 파일 목록에만 표시됩니다.
+- `git diff`의 unstaged 변경과 `git diff --cached`의 staged 변경을 모두 수집합니다.
+- 아직 추적하지 않는 파일은 변경 파일 목록에만 표시되며 파일 내용은 포함되지
+  않습니다.
 
 ### API 사용
 
