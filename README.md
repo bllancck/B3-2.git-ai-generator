@@ -25,13 +25,24 @@ AI API에 전달하고, 변경 내용에 맞는 커밋 메시지 또는 Pull Req
 ## 동작 흐름
 
 ```mermaid
-flowchart LR
-    Command["CLI 명령"] --> Collect["Git 변경 수집"]
-    Collect --> Protect["민감정보 처리"]
-    Protect --> Generate["AI 초안 생성"]
-    Generate --> Validate["형식 검증·보정"]
-    Validate --> Output["터미널 출력"]
+flowchart TB
+    Start(["commit 또는 pr 명령과 옵션 입력"])
+    Collect["git status와 staged·unstaged diff 수집"]
+    HasChanges{"변경 사항이 있는가?"}
+    NoChanges(["API를 호출하지 않고 종료"])
+    Key["AI_API_KEY 확인"]
+    Mask["--safe-mode 선택 시 민감정보 마스킹"]
+    Prompt["커밋 메시지 또는 PR 생성을 위한 프롬프트 작성"]
+    Request["코디세이 AI API 호출"]
+    Check["커밋 제목 길이와 PR 섹션 검사·보완"]
+    Output(["커밋 메시지 또는 PR 초안을 터미널에 출력"])
+
+    Start --> Collect --> HasChanges
+    HasChanges -->|없음| NoChanges
+    HasChanges -->|있음| Key --> Mask --> Prompt --> Request --> Check --> Output
 ```
+
+출력된 내용은 Git이나 GitHub에 자동 반영되지 않습니다.
 
 프로그램의 내부 구조와 세부 처리 과정은 다음 문서를 참고하세요.
 
