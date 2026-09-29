@@ -33,7 +33,7 @@ from gitgen.postprocess import (
     validate_commit_message,
     validate_pr_draft,
 )
-from gitgen.prompts import build_basic_prompt, build_commit_prompt, build_pr_prompt
+from gitgen.prompts import build_commit_prompt, build_pr_prompt
 from gitgen.render import (
     RESULT_SEPARATOR,
     print_commit_result,
