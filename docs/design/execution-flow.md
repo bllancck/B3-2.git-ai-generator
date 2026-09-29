@@ -50,6 +50,18 @@ flowchart TB
     Config -. 오류 .-> Errors
     AI -. 오류 .-> Errors
     Errors --> Failure
+
+    classDef input fill:#DBEAFE,stroke:#2563EB,color:#1E3A8A
+    classDef process fill:#F3F4F6,stroke:#6B7280,color:#111827
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F
+    classDef success fill:#DCFCE7,stroke:#16A34A,color:#14532D
+    classDef failure fill:#FEE2E2,stroke:#DC2626,color:#7F1D1D
+
+    class Start,Repo,Env,API input
+    class Main,CLI,GitCtx,Config,Sanitize,Original,Preview,CommitPrompt,PRPrompt,AI,CommitRender,PRRender,CommitValidate,PRValidate process
+    class HasChanges,SafeMode,Command,ResultType decision
+    class NoChanges,Success success
+    class Errors,Failure failure
 ```
 
 함수 단위의 세부 연결은 [함수 호출 관계](function-call-flow.md)를 참고한다.

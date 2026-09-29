@@ -22,7 +22,9 @@ AI API에 전달하고, 변경 내용에 맞는 커밋 메시지 또는 Pull Req
 | 예외 처리 | 변경 없음, Key 누락, 인증·네트워크 오류를 구분해 안내 |
 | 결과 출력 | 생성 결과를 자동 적용하지 않고 검토 가능한 초안으로 출력 |
 
-## 동작 흐름
+## 사용 흐름
+
+사용자 명령이 커밋 메시지 또는 PR 초안으로 출력되는 과정을 간단히 나타냅니다.
 
 ```mermaid
 flowchart TB
@@ -40,14 +42,24 @@ flowchart TB
     Start --> Collect --> HasChanges
     HasChanges -->|없음| NoChanges
     HasChanges -->|있음| Key --> Mask --> Prompt --> Request --> Check --> Output
+
+    classDef input fill:#DBEAFE,stroke:#2563EB,color:#1E3A8A
+    classDef process fill:#F3F4F6,stroke:#6B7280,color:#111827
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F
+    classDef success fill:#DCFCE7,stroke:#16A34A,color:#14532D
+
+    class Start input
+    class Collect,Key,Mask,Prompt,Request,Check process
+    class HasChanges decision
+    class NoChanges,Output success
 ```
 
 출력된 내용은 Git이나 GitHub에 자동 반영되지 않습니다.
 
 프로그램의 내부 구조와 세부 처리 과정은 다음 문서를 참고하세요.
 
-- [모듈 구성과 역할](docs/design/architecture.md): 파일별 책임, 데이터 경계, 구현 범위
 - [상세 실행 흐름](docs/design/execution-flow.md): 명령 실행부터 종료까지의 처리 순서와 분기
+- [모듈 구성과 역할](docs/design/architecture.md): 파일별 책임, 데이터 경계, 구현 범위
 - [함수 호출 관계](docs/design/function-call-flow.md): 함수가 호출되는 관계와 각 함수의 역할
 
 ## 프로젝트 구조

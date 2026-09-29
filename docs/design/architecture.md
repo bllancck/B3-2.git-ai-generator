@@ -10,9 +10,9 @@
 연결하고, `gitgen/`의 모듈이 Git 수집, 설정, 프롬프트, API 통신, 마스킹,
 결과 검증과 출력을 담당한다. 데이터베이스나 별도 서버는 사용하지 않는다.
 
-## 전체 구성도
+## 모듈 간 데이터 흐름
 
-아래 화살표는 주요 데이터 흐름을 나타낸다.
+아래 화살표는 모듈과 외부 시스템 사이에서 전달되는 데이터의 방향을 나타낸다.
 
 ```mermaid
 flowchart LR
@@ -35,6 +35,16 @@ flowchart LR
     Validate --> Result[render.py<br/>생성 결과 출력]
     Preview --> Terminal[터미널]
     Result --> Terminal
+
+    classDef input fill:#DBEAFE,stroke:#2563EB,color:#1E3A8A
+    classDef process fill:#F3F4F6,stroke:#6B7280,color:#111827
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F
+    classDef success fill:#DCFCE7,stroke:#16A34A,color:#14532D
+
+    class User,Git,Env,API input
+    class CLI,Main,GitCtx,Config,Mask,Changes,Prompt,Preview,AI,Generated,Validate,Result process
+    class Input decision
+    class Terminal success
 ```
 
 API Key는 `main.py`에서 `ai.py`로 전달되어 인증 헤더에 사용된다.
@@ -61,35 +71,8 @@ API Key는 `main.py`에서 `ai.py`로 전달되어 인증 헤더에 사용된다
 `main.py`에는 여러 모듈의 함수를 가져오는 import도 있지만 실제 기능 구현은
 각 모듈에 있다. 결과 검증은 현재 `render.py`가 `postprocess.py`를 호출하는 구조다.
 
-## 실행 흐름
-
-```mermaid
-flowchart TD
-    Start[CLI 실행] --> Parse[명령과 옵션 검증]
-    Parse --> Collect[Git status와 staged / unstaged diff 수집]
-    Collect --> Changed{변경이 있는가?}
-    Changed -->|아니오| Empty[API 호출 없이 정상 종료]
-    Changed -->|예| Key[API Key 확인]
-    Key --> Safe[옵션에 따라 파일명과 diff 마스킹]
-    Safe --> Show[파일 목록과 diff 출력]
-    Show --> Build[commit 또는 pr 프롬프트 생성]
-    Build --> Request[AI API 요청 1회]
-    Request --> Text[응답에서 생성 텍스트 추출]
-    Text --> Check[결과 길이와 형식 검증 및 보완]
-    Check --> Print[경고와 최종 초안 출력]
-    Print --> Done[정상 종료]
-```
-
-1. `argparse`가 명령과 옵션을 해석한다. 모델명은 비어 있으면 안 되고,
-   temperature는 0~2, 최대 출력 토큰 수는 1 이상의 정수여야 한다.
-2. `git status --short`, `git diff`, `git diff --cached`를 실행한다.
-   합친 diff에는 staged 내용을 먼저, unstaged 내용을 나중에 넣고 각각의 구분을 표시한다.
-3. 파일 목록이 비어 있고 diff도 공백뿐이면 API Key를 확인하지 않고 종료한다.
-4. 변경이 있으면 API Key를 읽는다. 이미 설정된 환경변수가 `.env`보다 우선한다.
-5. `--safe-mode`가 켜져 있으면 파일명과 diff를 마스킹한다.
-   같은 처리 결과를 터미널의 변경 미리보기와 AI 프롬프트에 사용한다.
-6. 선택한 명령의 프롬프트를 구성하여 API를 한 번 호출한다.
-7. 생성 텍스트를 후처리하고 초안을 출력한다. 형식 보완에는 추가 API 호출이 없다.
+명령 실행 순서와 변경 유무, Safe mode, 오류 및 종료 분기는
+[상세 실행 흐름](execution-flow.md)을 참고한다.
 
 ## 데이터와 외부 시스템 경계
 
