@@ -1,15 +1,11 @@
 """AI 응답의 커밋 제목과 PR 본문 형식을 검증한다."""
 
-COMMIT_RECOMMENDED_TITLE_LENGTH = 50
-
-
-COMMIT_MAX_TITLE_LENGTH = 72
-
-
-PR_MAX_TITLE_LENGTH = 80
-
-
-PR_SECTION_NAMES = ("Why", "What", "How to Test")
+from .rules import (
+    COMMIT_MAX_TITLE_LENGTH,
+    COMMIT_RECOMMENDED_TITLE_LENGTH,
+    PR_MAX_TITLE_LENGTH,
+    PR_SECTION_NAMES,
+)
 
 
 def split_pr_draft(generated_text: str) -> tuple[str, str]:

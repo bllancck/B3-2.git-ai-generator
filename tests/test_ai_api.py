@@ -285,6 +285,8 @@ class CommitGenerationTest(unittest.TestCase):
         self.assertIn("- README.md", prompt)
         self.assertIn("새로운 변경 내용", prompt)
         self.assertIn("제목 한 줄만", prompt)
+        self.assertIn("가능하면 50자 이내", prompt)
+        self.assertIn("반드시 72자를 넘기지 마세요", prompt)
         self.assertIn("제공되지 않은 변경 내용을 추측하지 마세요", prompt)
 
     def test_commit_command_prints_copyable_commit_message(self):
@@ -337,6 +339,7 @@ class PRGenerationTest(unittest.TestCase):
         self.assertIn("## Why", prompt)
         self.assertIn("## What", prompt)
         self.assertIn("## How to Test", prompt)
+        self.assertIn("PR 제목은 80자를 넘기지 마세요", prompt)
         self.assertIn("각각 불릿을 한 개 이상", prompt)
         self.assertIn("제공되지 않은 변경 내용이나 테스트 결과를 추측하지 마세요", prompt)
 

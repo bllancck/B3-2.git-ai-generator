@@ -63,6 +63,7 @@ API Key는 `main.py`에서 `ai.py`로 전달되어 인증 헤더에 사용된다
 | [gitgen/gitctx.py](../../gitgen/gitctx.py) | Git 명령을 실행하여 변경 파일 목록과 diff를 수집한다. | `collect_git_changes()` |
 | [gitgen/sanitizer.py](../../gitgen/sanitizer.py) | 파일명과 diff에서 알려진 민감정보 패턴을 마스킹한다. | `mask_changes_for_safe_mode()` |
 | [gitgen/prompts.py](../../gitgen/prompts.py) | 변경 내용을 명령별 생성 규칙과 결합해 프롬프트를 만든다. | `build_commit_prompt()`, `build_pr_prompt()` |
+| [gitgen/rules.py](../../gitgen/rules.py) | 프롬프트와 후처리가 공유하는 제목 길이와 PR 섹션 규칙을 정의한다. | 생성 규칙 상수 |
 | [gitgen/ai.py](../../gitgen/ai.py) | API 요청을 보내고 응답 텍스트 추출 및 통신 오류 변환을 담당한다. | `call_ai_api()` |
 | [gitgen/postprocess.py](../../gitgen/postprocess.py) | 생성된 제목의 길이와 PR 본문 구조를 검사하고 보완한다. | `validate_commit_message()`, `validate_pr_draft()` |
 | [gitgen/render.py](../../gitgen/render.py) | Git 변경을 표시하고 후처리 함수를 호출하여 결과와 경고를 출력한다. | `print_git_changes()`, `print_commit_result()`, `print_pr_result()` |
@@ -99,6 +100,8 @@ Git 명령은 프로그램을 실행한 현재 작업 디렉터리를 기준으�
 
 ### 결과 검증
 
+- 제목 길이와 PR 본문 형식은 프롬프트에 먼저 전달하여 준수를 유도하고,
+  생성 결과를 후처리에서 같은 규칙으로 다시 검증한다.
 - 커밋 결과는 첫 줄을 제목으로 사용한다. 50자 초과 시 권장 길이 경고를 표시하고,
   72자 초과 시 말줄임표를 포함하여 72자 이내로 줄인다.
 - PR 결과는 첫 줄을 제목으로, 나머지를 본문으로 나눈다. 제목은 80자 이내로 줄인다.
